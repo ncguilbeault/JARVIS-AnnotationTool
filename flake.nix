@@ -85,6 +85,12 @@
             rm -rf libs/libcbdetect
             cp -r ${libcbdetect-src} libs/libcbdetect
             chmod -R u+w libs/libcbdetect
+
+            # Point the hardcoded icon theme search path at our install
+            # prefix so QIcon::fromTheme can locate DarkIconTheme.
+            substituteInPlace main.cpp \
+              --replace-fail '/usr/local/share/JARVIS-AnnotationTool/icons' \
+                             '${placeholder "out"}/share/JARVIS-AnnotationTool/icons'
           '';
 
           # The in-tree CMakeLists.txt only installs the binary on specific
@@ -92,6 +98,9 @@
           installPhase = ''
             runHook preInstall
             install -Dm755 AnnotationTool $out/bin/jarvis-annotationtool
+            mkdir -p $out/share/JARVIS-AnnotationTool/icons
+            cp -r ../IconThemes/DarkIconTheme \
+              $out/share/JARVIS-AnnotationTool/icons/
             runHook postInstall
           '';
 
